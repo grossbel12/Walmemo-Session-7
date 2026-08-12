@@ -4,7 +4,7 @@
 
 I chose Exam Mistake Memory because it focuses on the most valuable part of studying with an AI tutor: not the material it can explain, but the mistakes I personally keep making. I tested it while learning Sui, Walrus, and Walrus Memory across three short sessions in Codex.
 
-The original prompt has a sharp idea. Wrong answers become durable memories, every new session begins with a weakness briefing, and quizzes focus on recurring misconceptions instead of restarting from generic material. In my first session, I answered ten diagnostic questions about blob IDs, availability certificates, encryption, memory spaces, and the Walrus Memory relayer. **[BASELINE RESULT AND EVIDENCE]**
+The original prompt has a sharp idea. Wrong answers become durable memories, every new session begins with a weakness briefing, and quizzes focus on recurring misconceptions instead of restarting from generic material. In my first session, I answered ten diagnostic questions about blob IDs, availability certificates, encryption, memory spaces, and the Walrus Memory relayer. I got zero fully correct, one partially correct, and nine wrong. All ten mistake records completed on Walrus in one bulk request, and a later semantic recall returned all ten; the session summary was stored as an eleventh blob.
 
 The test exposed a state-management mismatch. The prompt tells the agent to find an existing mistake and “update” its miss count. But the current Walrus Memory MCP tools are append-oriented: they remember and recall durable blobs, without a normal in-place update operation. The prompt also defines mastery as three correct answers across two sessions while telling the agent not to store correct answers. That makes the streak impossible to prove after the conversation ends.
 
@@ -14,7 +14,6 @@ The event key also provides a practical duplicate guard. If a write times out, t
 
 In a fresh Codex task on the second session, **[COLD-RECALL RESULT]**. The improved weakness briefing showed **[SCORE EXAMPLE]** and explained its ranking instead of presenting an unexplained “top five.” In the final session, **[MASTERY OR DUPLICATE-TEST RESULT]**.
 
-The most useful surprise was **[HONEST SURPRISE]**. The main friction point was **[REPRODUCIBLE FRICTION]**. My improvement idea for Walrus Memory is native idempotency support for remember jobs, so agents do not have to implement exact-key recall around uncertain writes.
+The first useful surprise was that the REST SDK remained fully healthy while the MCP SSE bridge was blocked: health, bulk storage, polling, and recall all worked with the same credentials. The main friction point was MCP connection lifecycle recovery. After successful wallet authorization, fresh bridges repeatedly received `ip_active_cap`, and the Windows client crashed after the 429 instead of surfacing a clean recovery path. My improvement idea for Walrus Memory is native idempotency support for remember jobs, plus an authenticated way to replace or close a stale MCP session.
 
 Would I use it again? **[YES/NO AND WHY]**. The experiment changed the tutor from a collection of remembered notes into an auditable model of how my understanding changed over time. That is a better fit for immutable storage—and a much more honest definition of learning.
-
