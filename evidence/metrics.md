@@ -1,21 +1,21 @@
 # Before/after metrics
 
-Complete only from the three session logs.
-
 | Metric | Original prompt | V2 | Evidence |
 |---|---:|---:|---|
-| Previously failed topics recalled on cold start | TBD | TBD | TBD |
-| Repeat errors on recalled topics | TBD | TBD | TBD |
-| Duplicate or near-duplicate memory events | TBD | TBD | TBD |
-| Correct streaks durable across sessions | TBD | TBD | TBD |
-| Topics reaching evidenced mastery | 0 | TBD | Session 1 baseline |
-| Weakness rankings with visible rationale | 0 (no prior history) | TBD | Session 1 baseline |
-| Ambiguous write results safely handled | 0 by prompt; operational SDK fallback recovered the records | TBD | Session 1 log + blob IDs |
+| Previously failed topics recalled at a new session boundary | n/a | 10 | Session 2 recall output |
+| Repeat errors on recalled topics | n/a | not tested | User requested assisted answers |
+| Duplicate or near-duplicate memory events | 0 observed | 1 excess duplicate | Session 3 returned two blobs for one event key |
+| Correct streaks durable across sessions | Not representable under original no-correct-answer rule | not tested | No unassisted answers were supplied |
+| Topics reaching evidenced mastery | 0 | 0 | Sessions 1–3 |
+| Weakness rankings with visible rationale | 0 | 5 | Session 2 briefing |
+| Indexed exact-key duplicate stopped | n/a | 1 | Session 2 duplicate check |
+| Pre-index duplicate safely prevented | n/a | no | Session 3 race evidence |
+| Ambiguous write results safely handled | 0 by prompt; operational SDK fallback recovered baseline records | not proven | No true timeout; race exposed instead |
 
-## Interpretation rules
+## Interpretation
 
-- Use counts, not percentages, when the sample is smaller than 20 questions.
-- Do not count a memory as recalled if the user restated it in the new task.
-- Do not count prompted or hinted answers as PROGRESS.
-- Do not claim timeout safety was empirically proven unless a real timeout occurred.
-- Report both successes and failures.
+- The sample is reported as counts, not percentages.
+- All ten recalled topics came from Walrus Memory; the user did not restate them in Session 2.
+- Assistant-provided answers are not counted as PROGRESS.
+- No mastery, relapse, 24-hour retention, or timeout-safety claim is made.
+- The duplicate result is empirical: two distinct blob IDs contain the same exact Session 3 event key.

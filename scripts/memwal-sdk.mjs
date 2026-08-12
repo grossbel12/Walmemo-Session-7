@@ -42,6 +42,24 @@ function sessionOneItems(markdown) {
     });
 }
 
+async function rememberExactOnce(text, eventKey) {
+  const existing = await memwal.recall({
+    query: eventKey,
+    namespace: "sui-walrus",
+    limit: 20,
+  });
+  const found = existing.results.find((item) => item.text.includes(eventKey));
+  if (found) {
+    return { status: "already-confirmed", event_key: eventKey, blob_id: found.blob_id };
+  }
+
+  const result = await memwal.rememberAndWait(text, "sui-walrus", {
+    pollIntervalMs: 2000,
+    timeoutMs: 180000,
+  });
+  return { status: "written", event_key: eventKey, result };
+}
+
 const [action = "health", rawArg = ""] = process.argv.slice(2);
 
 try {
@@ -101,6 +119,54 @@ try {
       const result = await memwal.rememberAndWait(text, "sui-walrus", { pollIntervalMs: 2000, timeoutMs: 180000 });
       process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     }
+  } else if (action === "summary-session-2-assisted") {
+    const eventKey = "2026-08-12-02/session-summary/SESSION_SUMMARY/1";
+    const text = [
+      "EMM2",
+      `event_key=${eventKey}`,
+      "event_type=SESSION_SUMMARY",
+      "session_id=2026-08-12-02",
+      "occurred_at=2026-08-12T14:15:00+03:00",
+      "topic_id=session-summary",
+      "question_key=na",
+      "severity=na",
+      "answer=assistant-provided-all-five-answers-at-user-request",
+      "misconception=na",
+      "correct=na",
+      "prior_events=baseline-2026-08-12-01/1,baseline-2026-08-12-01/2,baseline-2026-08-12-01/3,baseline-2026-08-12-01/4,baseline-2026-08-12-01/5,baseline-2026-08-12-01/6,baseline-2026-08-12-01/7,baseline-2026-08-12-01/8,baseline-2026-08-12-01/9,baseline-2026-08-12-01/10",
+      "evidence=recall recovered all ten baseline mistake records; weakness briefing ranked five topics; five answers were assisted so zero PROGRESS events qualify",
+    ].join(" | ");
+    const result = await rememberExactOnce(text, eventKey);
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else if (action === "duplicate-check-session-2") {
+    const eventKey = "2026-08-12-02/session-summary/SESSION_SUMMARY/1";
+    const existing = await memwal.recall({ query: eventKey, namespace: "sui-walrus", limit: 20 });
+    const exact = existing.results.filter((item) => item.text.includes(`event_key=${eventKey}`));
+    process.stdout.write(`${JSON.stringify({
+      event_key: eventKey,
+      exact_matches: exact.length,
+      action: exact.length > 0 ? "SKIP_DUPLICATE_WRITE" : "NOT_FOUND_DO_NOT_INFER_GLOBAL_ABSENCE",
+      blob_ids: exact.map((item) => item.blob_id),
+    }, null, 2)}\n`);
+  } else if (action === "summary-session-3-technical") {
+    const eventKey = "2026-08-12-03/session-summary/SESSION_SUMMARY/1";
+    const text = [
+      "EMM2",
+      `event_key=${eventKey}`,
+      "event_type=SESSION_SUMMARY",
+      "session_id=2026-08-12-03",
+      "occurred_at=2026-08-12T14:30:00+03:00",
+      "topic_id=session-summary",
+      "question_key=na",
+      "severity=na",
+      "answer=no-unassisted-user-answers",
+      "misconception=na",
+      "correct=na",
+      "prior_events=2026-08-12-02/session-summary/SESSION_SUMMARY/1",
+      "evidence=exact-key duplicate check found one existing event and skipped resubmission; mastery and relapse were not claimed because no qualifying PROGRESS exists",
+    ].join(" | ");
+    const result = await rememberExactOnce(text, eventKey);
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } else {
     throw new Error(`Unknown action: ${action}`);
   }

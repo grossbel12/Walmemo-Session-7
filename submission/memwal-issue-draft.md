@@ -66,3 +66,11 @@ Using the same local credentials with `@mysten-incubation/memwal` 0.1.1 over the
 
 Add an authenticated session-status/close endpoint and have `memwal-mcp` include a client instance ID. On reconnect, the relayer could replace the prior session for that instance instead of consuming another IP slot. Also return the 429 reason through the local MCP transport before shutdown and close Windows async handles gracefully.
 
+## Separate empirical idempotency observation
+
+During the same experiment, an exact-key recall correctly stopped a repeat after the first event was indexed. However, two close invocations for a new event produced two distinct blobs containing the same `event_key` while indexing was still catching up:
+
+- `4ZQ1JEhlvq8GHBwCpYSlU6KwQqTJTr0DiriVXfxiOvo`
+- `K01rf-xKlAEqhMzjn8pxIs5tKSc3_SFpbPcIcuv60rQ`
+
+This is expected from an eventually indexed semantic read path, but it means client-side recall-before-write cannot provide atomic idempotency. A native `idempotency_key` accepted by remember endpoints would make uncertain-write recovery deterministic.

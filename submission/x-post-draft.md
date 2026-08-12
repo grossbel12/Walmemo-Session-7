@@ -1,10 +1,11 @@
-I tested Exam Mistake Memory across 3 real Sui/Walrus study sessions in Codex.
+I evolved Exam Mistake Memory into an append-only learning ledger on Walrus.
 
-My rewrite replaces fake in-place “updates” with an append-only learning ledger: MISTAKE → PROGRESS → MASTERED → RELAPSE, plus exact-key duplicate checks for async writes.
+10/10 real baseline mistakes were recalled at the next session boundary. V2 ranked weaknesses transparently and refused to count assistant-supplied answers as progress.
 
-Results: [VERIFIED RESULT]
+Surprise: exact-key recall stopped an indexed duplicate, but an async indexing race still produced 2 blobs for 1 event key. Server-side idempotency would fix it.
+
 Article: [LINK]
-Prompt: [LINK]
+Prompt + evidence: [LINK]
 
 @WalrusProtocol #WalrusMemory
 
