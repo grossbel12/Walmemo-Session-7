@@ -1,0 +1,37 @@
+# GitHub Issue draft for the original prompt repository
+
+## Title
+
+Replace in-place “updates” with append-only learning events and make mastery reconstructable
+
+## Body
+
+I used Exam Mistake Memory for a real multi-session Sui and Walrus study experiment. Two related prompt rules created a state-management gap:
+
+1. The dedup rule tells the agent to “update” a matching entry and increment `misses`, but the documented Walrus Memory MCP surface exposes remember/recall/analyze/restore operations rather than a general in-place update tool.
+2. Mastery requires three correct answers across at least two sessions, while the prompt also says not to store correct answers. A new session therefore lacks durable evidence needed to reconstruct the streak reliably.
+
+### Suggested change
+
+Treat the memory space as an append-only event log:
+
+- use stable `topic_id` and `event_key` values;
+- append `MISTAKE`, `RETRY`, `PROGRESS`, `MASTERED`, and `RELAPSE` events;
+- save PROGRESS only for previously failed topics, preserving the low-noise goal;
+- derive current state from recalled events instead of claiming that an older blob was updated;
+- when a write times out, recall the exact event key before retrying to reduce duplicates.
+
+I implemented and tested this approach in an improved prompt here: **[PUBLIC REPOSITORY OR GIST LINK]**.
+
+### Before/after evidence
+
+- Original behavior: **[EVIDENCE LINK]**
+- V2 cold recall and progress event: **[EVIDENCE LINK]**
+- Cross-session mastery or duplicate test: **[EVIDENCE LINK]**
+
+### Why this matters
+
+The change aligns the prompt with immutable durable storage, makes mastery auditable across sessions, and avoids presenting a new blob as an in-place mutation. It also preserves the original prompt's strongest design choice: correct first-attempt answers remain noise-free and are not stored.
+
+I would be happy to adapt the format to the repository's preferred style.
+
