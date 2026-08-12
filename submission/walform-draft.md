@@ -30,7 +30,7 @@ Add first-class server-side idempotency keys for remember jobs. The empirical du
 
 ## Required links
 
-- Improved prompt and evidence: [LINK]
+- Improved prompt and evidence: https://github.com/grossbel12/Walmemo-Session-7
 - Issue on original prompt repository: [LINK]
 - Published Medium article: [LINK]
 - X post: [LINK]

@@ -21,14 +21,14 @@ Treat the memory space as an append-only event log:
 - derive current state from recalled events instead of claiming that an older blob was updated;
 - when a write times out, recall the exact event key before retrying to reduce duplicates.
 
-I implemented and tested this approach in an improved prompt here: **[PUBLIC REPOSITORY OR GIST LINK]**.
+I implemented and tested this approach in an improved prompt here: **https://github.com/grossbel12/Walmemo-Session-7/blob/main/prompts/exam-mistake-memory-v2.md**.
 
 ### Before/after evidence
 
-- Original behavior: 10 baseline mistakes stored and recalled: **[EVIDENCE LINK]**
-- V2 recovered all 10 at the next session boundary and ranked five with visible score components: **[EVIDENCE LINK]**
-- An indexed exact-key check skipped a duplicate, but a pre-index race produced two blobs for one key: **[EVIDENCE LINK]**
-- The user delegated the review answers, so V2 correctly created zero PROGRESS or MASTERED events: **[EVIDENCE LINK]**
+- Original behavior: 10 baseline mistakes stored and recalled: **https://github.com/grossbel12/Walmemo-Session-7/blob/main/evidence/session-1.md**
+- V2 recovered all 10 at the next session boundary and ranked five with visible score components: **https://github.com/grossbel12/Walmemo-Session-7/blob/main/evidence/session-2.md**
+- An indexed exact-key check skipped a duplicate, but a pre-index race produced two blobs for one key: **https://github.com/grossbel12/Walmemo-Session-7/blob/main/evidence/session-3.md**
+- The user delegated the review answers, so V2 correctly created zero PROGRESS or MASTERED events: **https://github.com/grossbel12/Walmemo-Session-7/blob/main/evidence/metrics.md**
 
 ### Why this matters
 

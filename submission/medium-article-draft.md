@@ -18,4 +18,4 @@ There was also MCP lifecycle friction. After successful wallet authorization, ne
 
 Would I use this approach again? Yes. It produced an auditable weakness model and refused to overstate learning. The remaining work is clear: real unassisted answers across time for mastery, and service-level idempotency for asynchronous writes. Immutable storage fits education well when the prompt models learning as evidence, not mutable counters.
 
-Improved prompt and evidence: **[PUBLIC REPOSITORY LINK]**
+Improved prompt and evidence: **https://github.com/grossbel12/Walmemo-Session-7**
