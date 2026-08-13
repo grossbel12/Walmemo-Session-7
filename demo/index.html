@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exam Mistake Memory Demo Renderer</title>
+  <style>
+    html, body { margin: 0; min-height: 100%; background: #02070d; color: #eef8f7; font-family: Inter, "Segoe UI", Arial, sans-serif; }
+    body { display: grid; place-items: center; }
+    canvas { width: min(100vw, 1280px); aspect-ratio: 16 / 9; box-shadow: 0 24px 80px #000a; }
+    #status { position: fixed; bottom: 14px; right: 18px; color: #83f5d1; font: 13px ui-monospace, Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <canvas id="demo" width="1280" height="720"></canvas>
+  <div id="status">Preparing recorder…</div>
+  <script>
+    const canvas = document.querySelector("#demo");
+    const ctx = canvas.getContext("2d");
+    const status = document.querySelector("#status");
+    const W = canvas.width;
+    const H = canvas.height;
+    const slideMs = 5200;
+
+    const slides = [
+      {
+        kicker: "WALRUS SESSION 7 · PROMPT EVOLUTION",
+        title: "Exam Mistake Memory",
+        subtitle: "An append-only learning ledger",
+        stat: "Real study evidence · Sui & Walrus Fundamentals · Aug 12–13"
+      },
+      {
+        kicker: "THE ORIGINAL PROMPT",
+        title: "Great idea.\nTwo state gaps.",
+        bullets: [
+          "It asked the agent to ‘update’ immutable memories.",
+          "It required a 3-answer mastery streak — but forbade storing correct answers.",
+          "A later session could not prove how understanding changed."
+        ]
+      },
+      {
+        kicker: "THE V2 MODEL",
+        title: "Learning becomes evidence",
+        flow: ["MISTAKE", "RETRY", "PROGRESS", "MASTERED", "RELAPSE"],
+        subtitle: "Stable topic IDs + event keys · current state reconstructed from immutable history"
+      },
+      {
+        kicker: "REAL BASELINE",
+        title: "10 mistakes stored.\n10 mistakes recalled.",
+        metrics: [["10", "questions"], ["0", "fully correct"], ["10/10", "Walrus writes"], ["10/10", "cold recall"]],
+        subtitle: "One bulk operation · zero failed jobs · confirmed by semantic recall"
+      },
+      {
+        kicker: "WEAKNESS BRIEFING",
+        title: "Priorities with reasons",
+        score: "3 severity × 1 recalled failure + 3 recency = 6",
+        bullets: [
+          "Blob ID vs Sui object ID",
+          "Deterministic blob IDs",
+          "Permanent vs deletable blobs",
+          "Certificates and erasure-coded availability"
+        ]
+      },
+      {
+        kicker: "HONEST LEARNING STATE",
+        title: "Assisted ≠ mastered",
+        metrics: [["10/10", "weaknesses recalled"], ["0", "PROGRESS events"], ["0", "MASTERED topics"]],
+        subtitle: "The user delegated the answers. V2 refused to invent progress."
+      },
+      {
+        kicker: "THE SURPRISE",
+        title: "A real async duplicate race",
+        code: [
+          "event_key = 2026-08-12-03/session-summary/SESSION_SUMMARY/1",
+          "blob A = 4ZQ1JEhl…iOvo",
+          "blob B = K01rf-xK…60rQ"
+        ],
+        subtitle: "Recall-before-write helps after indexing — but it is not atomic."
+      },
+      {
+        kicker: "IMPROVEMENT IDEA",
+        title: "Server-side idempotency",
+        bullets: [
+          "Accept a native idempotency_key on remember jobs.",
+          "Add MCP session status / stale-session close.",
+          "Keep the ledger immutable, auditable, and honest."
+        ],
+        stat: "github.com/grossbel12/Walmemo-Session-7"
+      }
+    ];
+
+    function roundedRect(x, y, w, h, r, fill, stroke) {
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.stroke(); }
+    }
+
+    function wrap(text, x, y, maxWidth, lineHeight, font, color, alpha = 1) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.font = font;
+      ctx.fillStyle = color;
+      const paragraphs = text.split("\n");
+      let yy = y;
+      for (const paragraph of paragraphs) {
+        const words = paragraph.split(" ");
+        let line = "";
+        for (const word of words) {
+          const test = line ? line + " " + word : word;
+          if (ctx.measureText(test).width > maxWidth && line) {
+            ctx.fillText(line, x, yy);
+            yy += lineHeight;
+            line = word;
+          } else line = test;
+        }
+        ctx.fillText(line, x, yy);
+        yy += lineHeight;
+      }
+      ctx.restore();
+      return yy;
+    }
+
+    function background(t) {
+      const g = ctx.createLinearGradient(0, 0, W, H);
+      g.addColorStop(0, "#041019");
+      g.addColorStop(0.55, "#071522");
+      g.addColorStop(1, "#160b27");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+      for (let i = 0; i < 18; i++) {
+        const x = (i * 173 + t * (5 + i % 3)) % (W + 160) - 80;
+        const y = 80 + (i * 97) % 560;
+        ctx.fillStyle = i % 2 ? "#36efc315" : "#a76bff12";
+        ctx.beginPath(); ctx.arc(x, y, 4 + i % 7, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.strokeStyle = "#5ef0d31c";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    }
+
+    function drawSlide(slide, local, index, totalElapsed) {
+      const fade = Math.min(1, local / 600, (slideMs - local) / 600);
+      const ease = 1 - Math.pow(1 - Math.min(1, local / 900), 3);
+      const offset = (1 - ease) * 32;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, fade);
+
+      ctx.font = "700 22px Segoe UI";
+      ctx.fillStyle = "#5ff0cf";
+      ctx.fillText(slide.kicker, 78, 84 + offset);
+
+      let nextY = wrap(slide.title, 78, 178 + offset, 1080, 76, "800 64px Segoe UI", "#f4fbfa");
+
+      if (slide.subtitle) {
+        nextY = wrap(slide.subtitle, 80, nextY + 18, 1050, 36, "400 25px Segoe UI", "#b8cccf");
+      }
+
+      if (slide.bullets) {
+        let y = Math.max(340, nextY + 28);
+        slide.bullets.forEach((bullet, i) => {
+          roundedRect(78, y - 28, 14, 14, 7, i % 2 ? "#ab70ff" : "#5ff0cf");
+          y = wrap(bullet, 112, y - 12, 1050, 34, "500 25px Segoe UI", "#dce9e9") + 14;
+        });
+      }
+
+      if (slide.flow) {
+        let x = 78;
+        const y = 382;
+        slide.flow.forEach((label, i) => {
+          const width = i === 3 ? 170 : 150;
+          roundedRect(x, y, width, 72, 18, i === 3 ? "#7f4dd8" : "#102b35", "#5ff0cf55");
+          ctx.font = "700 19px Consolas"; ctx.fillStyle = "#f2fbfa";
+          ctx.textAlign = "center"; ctx.fillText(label, x + width / 2, y + 44); ctx.textAlign = "left";
+          x += width;
+          if (i < slide.flow.length - 1) {
+            ctx.font = "700 25px Segoe UI"; ctx.fillStyle = "#6edcc8"; ctx.fillText("→", x + 8, y + 44); x += 46;
+          }
+        });
+      }
+
+      if (slide.metrics) {
+        const count = slide.metrics.length;
+        const gap = 18;
+        const cardW = Math.floor((1115 - gap * (count - 1)) / count);
+        slide.metrics.forEach(([value, label], i) => {
+          const x = 78 + i * (cardW + gap);
+          roundedRect(x, 382, cardW, 142, 20, "#0d2330dd", "#5ff0cf42");
+          ctx.font = "800 43px Segoe UI"; ctx.fillStyle = i === count - 1 ? "#b982ff" : "#63f0d1"; ctx.fillText(value, x + 24, 442);
+          ctx.font = "500 19px Segoe UI"; ctx.fillStyle = "#bdd0d2"; ctx.fillText(label, x + 24, 486);
+        });
+      }
+
+      if (slide.score) {
+        roundedRect(78, 365, 890, 88, 18, "#0d2330dd", "#5ff0cf55");
+        ctx.font = "700 29px Consolas"; ctx.fillStyle = "#6ef2d4"; ctx.fillText(slide.score, 106, 419);
+      }
+
+      if (slide.code) {
+        roundedRect(78, 360, 1110, 172, 18, "#02070dcc", "#a56fff55");
+        slide.code.forEach((line, i) => {
+          ctx.font = i === 0 ? "500 18px Consolas" : "700 24px Consolas";
+          ctx.fillStyle = i === 0 ? "#9bb0b6" : (i === 1 ? "#5ff0cf" : "#b982ff");
+          ctx.fillText(line, 108, 406 + i * 47);
+        });
+      }
+
+      if (slide.stat) {
+        roundedRect(78, 590, 1120, 64, 16, "#102531cc", "#5ff0cf38");
+        ctx.font = "600 20px Consolas"; ctx.fillStyle = "#c7dcdd"; ctx.fillText(slide.stat, 106, 630);
+      }
+
+      ctx.font = "600 17px Segoe UI"; ctx.fillStyle = "#789096";
+      ctx.fillText(`0${index + 1} / 0${slides.length}`, 1120, 82);
+      ctx.restore();
+
+      const progress = Math.min(1, totalElapsed / (slides.length * slideMs));
+      ctx.fillStyle = "#18333c"; ctx.fillRect(0, H - 7, W, 7);
+      const pg = ctx.createLinearGradient(0, 0, W, 0); pg.addColorStop(0, "#5ff0cf"); pg.addColorStop(1, "#a56fff");
+      ctx.fillStyle = pg; ctx.fillRect(0, H - 7, W * progress, 7);
+    }
+
+    function drawFrame(elapsed) {
+      const index = Math.min(slides.length - 1, Math.floor(elapsed / slideMs));
+      const local = elapsed - index * slideMs;
+      background(elapsed / 1000);
+      drawSlide(slides[index], local, index, elapsed);
+    }
+
+    async function record() {
+      const mimeTypes = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
+      const mimeType = mimeTypes.find(type => MediaRecorder.isTypeSupported(type));
+      if (!mimeType) throw new Error("No supported WebM MediaRecorder codec");
+      const stream = canvas.captureStream(0);
+      const track = stream.getVideoTracks()[0];
+      const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 5_000_000 });
+      const chunks = [];
+      recorder.ondataavailable = event => { if (event.data.size) chunks.push(event.data); };
+      recorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: mimeType });
+        status.textContent = `Saving ${(blob.size / 1024 / 1024).toFixed(1)} MB…`;
+        const response = await fetch("/upload", { method: "POST", headers: { "content-type": mimeType }, body: blob });
+        const result = await response.json();
+        status.textContent = result.ok ? `READY · ${(result.bytes / 1024 / 1024).toFixed(1)} MB` : "SAVE FAILED";
+        document.title = result.ok ? "Demo Ready" : "Demo Failed";
+      };
+      recorder.start(1000);
+      status.textContent = "RECORDING · 1280×720 · 30 FPS";
+      const startedAt = performance.now();
+      const frameTimer = setInterval(() => {
+        const elapsed = Math.min(performance.now() - startedAt, slides.length * slideMs - 1);
+        drawFrame(elapsed);
+        track.requestFrame();
+      }, 1000 / 30);
+      setTimeout(() => {
+        clearInterval(frameTimer);
+        drawFrame(slides.length * slideMs - 1);
+        track.requestFrame();
+        setTimeout(() => recorder.stop(), 200);
+      }, slides.length * slideMs);
+    }
+
+    document.fonts.ready.then(record).catch(error => {
+      status.textContent = `ERROR · ${error.message}`;
+      document.title = "Demo Failed";
+    });
+  </script>
+</body>
+</html>
