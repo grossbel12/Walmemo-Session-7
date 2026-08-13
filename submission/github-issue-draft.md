@@ -1,5 +1,7 @@
 # GitHub Issue draft for the original prompt repository
 
+Published: https://github.com/EAZITECH1/exam-mistake-memory/issues/1
+
 ## Title
 
 Replace in-place “updates” with append-only learning events and make mastery reconstructable
