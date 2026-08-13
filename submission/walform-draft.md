@@ -33,7 +33,7 @@ Add first-class server-side idempotency keys for remember jobs. The empirical du
 
 - Improved prompt and evidence: https://github.com/grossbel12/Walmemo-Session-7
 - Issue on original prompt repository: https://github.com/EAZITECH1/exam-mistake-memory/issues/1
-- Published Medium article: https://grossbelbir.medium.com/i-turned-my-ai-tutors-memory-into-an-append-only-learning-ledger-9f63cb04cad3
+- Published Medium article: https://grossbelbir.medium.com/i-turned-my-ai-tutors-memory-into-an-append-only-learning-ledger-e4c22e6f8029
 - X post: https://x.com/grossbel12/status/2087529687488561494
 - Optional MemWal bug report: [LINK]
 
