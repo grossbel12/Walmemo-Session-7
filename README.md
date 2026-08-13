@@ -23,7 +23,10 @@ Version 2 therefore treats the memory space as an **append-only learning event l
 - `study/` — three-session protocol and answer key.
 - `evidence/` — experiment log and metric templates.
 - `submission/` — GitHub Issue, Medium, X, and WalForm drafts.
+- `demo/` — source for the captioned 1280×720 evidence video.
 - `SOURCES.md` — primary documentation used for the prompt and quizzes.
+
+Demo video: https://youtu.be/IjvjIsIt28Q
 
 ## Experiment sequence
 

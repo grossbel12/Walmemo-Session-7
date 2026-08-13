@@ -35,6 +35,7 @@ Add first-class server-side idempotency keys for remember jobs. The empirical du
 - Issue on original prompt repository: https://github.com/EAZITECH1/exam-mistake-memory/issues/1
 - Published Medium article: https://grossbelbir.medium.com/i-turned-my-ai-tutors-memory-into-an-append-only-learning-ledger-e4c22e6f8029
 - X reply under the Session 7 announcement: https://x.com/grossbel12/status/2087832093795500334
+- Demo video: https://youtu.be/IjvjIsIt28Q
 - Optional MemWal bug report: [LINK]
 
 ## Submission route
