@@ -2,7 +2,7 @@
 
 | Metric | Original prompt | V2 | Evidence |
 |---|---:|---:|---|
-| Previously failed topics recalled at a new session boundary | n/a | 10 | Session 2 recall output |
+| Previously failed topics recalled at a new session boundary | n/a | 10 | Sessions 2 and 4 recall output |
 | Repeat errors on recalled topics | n/a | not tested | User requested assisted answers |
 | Duplicate or near-duplicate memory events | 0 observed | 1 excess duplicate | Session 3 returned two blobs for one event key |
 | Correct streaks durable across sessions | Not representable under original no-correct-answer rule | not tested | No unassisted answers were supplied |
@@ -15,7 +15,8 @@
 ## Interpretation
 
 - The sample is reported as counts, not percentages.
-- All ten recalled topics came from Walrus Memory; the user did not restate them in Session 2.
+- All ten recalled topics came from Walrus Memory; the user did not restate them in Sessions 2 or 4.
+- The experiment spans two calendar days, 2026-08-12 and 2026-08-13, not “a few days.”
 - Assistant-provided answers are not counted as PROGRESS.
 - No mastery, relapse, 24-hour retention, or timeout-safety claim is made.
 - The duplicate result is empirical: two distinct blob IDs contain the same exact Session 3 event key.

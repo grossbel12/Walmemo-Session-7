@@ -17,8 +17,9 @@ I replaced in-place update language with an append-only event model using stable
 - Assisted-answer integrity: the user delegated the answers, so V2 created 0 PROGRESS and 0 MASTERED events instead of inventing learning evidence.
 - Indexed duplicate check: one exact match found and the write was skipped.
 - Pre-index race: two different blob IDs were created for one identical event key, proving recall-before-write is not atomic.
+- Second calendar day: health remained OK and all ten baseline weaknesses were recalled again; the assisted review correctly created zero PROGRESS events.
 
-All three logical sessions were completed on 2026-08-12 at the user’s request. This submission does not claim 24-hour retention, multi-day mastery, relapse, or timeout safety.
+The prompt was used on 2026-08-12 and 2026-08-13. This submission does not describe that as “a few days” and does not claim multi-day mastery, relapse, or timeout safety.
 
 ## Bug or friction point
 
@@ -32,8 +33,8 @@ Add first-class server-side idempotency keys for remember jobs. The empirical du
 
 - Improved prompt and evidence: https://github.com/grossbel12/Walmemo-Session-7
 - Issue on original prompt repository: [LINK]
-- Published Medium article: [LINK]
-- X post: [LINK]
+- Published Medium article: https://grossbelbir.medium.com/i-turned-my-ai-tutors-memory-into-an-append-only-learning-ledger-9f63cb04cad3
+- X post: https://x.com/grossbel12/status/2087529687488561494
 - Optional MemWal bug report: [LINK]
 
 ## Submission route

@@ -167,6 +167,25 @@ try {
     ].join(" | ");
     const result = await rememberExactOnce(text, eventKey);
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  } else if (action === "summary-session-4-assisted") {
+    const eventKey = "2026-08-13-01/session-summary/SESSION_SUMMARY/1";
+    const text = [
+      "EMM2",
+      `event_key=${eventKey}`,
+      "event_type=SESSION_SUMMARY",
+      "session_id=2026-08-13-01",
+      "occurred_at=2026-08-13T10:15:00+03:00",
+      "topic_id=session-summary",
+      "question_key=na",
+      "severity=na",
+      "answer=assistant-provided-review-at-user-request",
+      "misconception=na",
+      "correct=na",
+      "prior_events=baseline-2026-08-12-01/1,baseline-2026-08-12-01/2,baseline-2026-08-12-01/3,baseline-2026-08-12-01/4,baseline-2026-08-12-01/5,baseline-2026-08-12-01/6",
+      "evidence=second-calendar-day recall recovered baseline weaknesses; assistant supplied the review answers so zero PROGRESS events qualify",
+    ].join(" | ");
+    const result = await rememberExactOnce(text, eventKey);
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } else {
     throw new Error(`Unknown action: ${action}`);
   }

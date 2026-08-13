@@ -31,6 +31,8 @@ Version 2 therefore treats the memory space as an **append-only learning event l
 2. **Session 2 / cold recall:** start a fresh Codex task with V2, reconstruct prior mistakes, and retest them.
 3. **Session 3 / mastery and relapse:** prove cross-session progress, mastery, spot-check behavior, and duplicate protection.
 
+A fourth short recall-and-review session was run on 2026-08-13. The user delegated the answers, so it provides second-calendar-day usage and recall evidence but no qualifying PROGRESS or mastery evidence. See `evidence/session-4.md`.
+
 Public claims remain marked as placeholders until supported by actual session evidence. No result should be published merely because it was expected by the protocol.
 
 ## Local setup
