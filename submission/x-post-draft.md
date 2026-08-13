@@ -1,3 +1,5 @@
+Published reply: https://x.com/grossbel12/status/2087832093795500334
+
 I’m participating in Walrus Session 7 with an evolved Exam Mistake Memory prompt: an append-only learning ledger.
 
 10/10 real baseline mistakes were recalled at the next session boundary. V2 ranked weaknesses transparently and refused to count assistant-supplied answers as progress.
